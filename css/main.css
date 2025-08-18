@@ -1,0 +1,379 @@
+/* 基础样式 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: url(https://picsum.photos/1600/900/?nature,animal,cat,car,rain,city,girl,starry) 
+                no-repeat center center fixed;
+    background-size: cover;
+    font-family: Arial, sans-serif;
+    line-height: 1.6;
+    padding: 20px;
+    padding-bottom: 80px;
+}
+
+/* 顶部搜索区域 */
+.header {
+    max-width: 1200px;
+    margin: 0 auto 30px;
+    text-align: center;
+}
+
+.search-container {
+    margin: 20px 0;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+}
+
+#search-input {
+    padding: 10px 15px;
+    width: 300px;
+    max-width: 100%;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.search-btn {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.search-btn:hover {
+    background-color: #45a049;
+}
+
+/* 滑动开关样式 */
+.toggle-switch-container {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 15px 0;
+    padding: 6px 12px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 6px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 45px;
+    height: 25px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    transition: .4s;
+    border-radius: 25px;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 19px;
+    width: 19px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #2196F3;
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+}
+
+.toggle-label {
+    font-size: 13px;
+    color: #333;
+    font-weight: 500;
+}
+
+/* Logo样式 */
+.logo-container {
+    margin: 20px 0;
+}
+
+.logo {
+    max-width: 300px;
+    height: auto;
+}
+
+/* 功能链接区域 */
+.functions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 15px;
+    margin: 20px 0 30px;
+    padding: 15px;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.function-item {
+    flex: 0 0 auto;
+    text-align: center;
+    padding: 10px;
+    border-radius: 6px;
+    transition: transform 0.2s ease;
+}
+
+.function-item:hover {
+    transform: translateY(-3px);
+}
+
+/* 机型部分样式 */
+.device-sections {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.section {
+    margin-bottom: 15px;
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.section:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.section-header {
+    background-color: #333;
+    color: white;
+    padding: 12px 20px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    user-select: none;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* 支持自定义机型标题颜色 */
+.section-header[data-color] h2 {
+    color: inherit;
+}
+.section-header[data-color] h2 {
+    /* 默认由JS动态设置 */
+}
+
+/* 图标样式 */
+.section-icons {
+    display: flex;
+    gap: 8px;
+    color: #ddd;
+}
+
+.download-icon, .cloud-icon, .key-icon {
+    font-size: 16px;
+}
+
+.toggle-icon {
+    transition: transform 0.3s ease;
+    display: inline-block;
+}
+
+.section.active .toggle-icon {
+    transform: rotate(180deg);
+}
+
+.section-content {
+    display: none;
+    padding: 20px;
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.section.active .section-content {
+    display: block;
+}
+
+/* 列表样式 */
+.item-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    list-style: none;
+}
+
+.list-item {
+    flex: 0 0 300px;
+    padding: 15px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+.list-item:hover {
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    transform: translateY(-2px);
+}
+
+.item-link {
+    text-decoration: none;
+    color: #333;
+    display: block;
+}
+
+.item-link:visited {
+    color: #666;
+}
+
+.item-link:hover .item-title {
+    color: #4CAF50;
+}
+
+.item-title {
+    font-size: 18px;
+    margin-bottom: 5px;
+    transition: color 0.3s ease;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.item-title i {
+    color: #666;
+    font-size: 16px;
+}
+
+.item-desc {
+    font-size: 14px;
+    color: #666;
+}
+
+/* 右下角功能按钮 */
+.fixed-actions {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 1000;
+}
+
+.action-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+}
+
+.action-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+
+.key-btn {
+    background-color: #FF9800;
+}
+
+.wechat-btn {
+    background-color: #4CAF50;
+}
+
+.top-btn {
+    background-color: #2196F3;
+}
+
+.bottom-btn {
+    background-color: #9C27B0;
+}
+
+/* 隐藏不需要的元素 */
+#meerkat-wrap, #sitemix_pr_footer_js {
+    display: none !important;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .list-item {
+        flex: 0 0 100%;
+    }
+    
+    .section-header h2 {
+        font-size: 16px;
+    }
+    
+    .functions {
+        gap: 10px;
+    }
+    
+    .function-item {
+        flex: 1 0 40%;
+    }
+    
+    .action-btn {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+    
+    .toggle-switch-container {
+        display: inline-flex;
+        padding: 6px 12px;
+        background-color: rgba(255, 255, 255, 0.8);
+        border-radius: 6px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+}
+
+@media (min-width: 769px) {
+    /* 预留样式 */
+}
