@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>密钥查询系统V3.0</title>
+  <style>
+    /* 基础样式保持不变 */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background-color: #f0f2f5;
+      padding: 20px;
+      color: #333;
+    }
+
+    .card {
+      background-color: white;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+      padding: 30px;
+      width: 100%;
+      max-width: 500px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+      color: #165DFF;
+      text-align: center;
+      margin-bottom: 30px;
+      font-size: 24px;
+      position: relative;
+    }
+
+    .title-with-line {
+      text-align: center;
+      position: relative;
+      width: 100%;
+      display: block;
+    }
+
+    .title-with-line::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 80%;
+      height: 3px;
+      background-color: #165DFF;
+      border-radius: 3px;
+      max-width: 200px;
+    }
+
+    .form-group {
+      margin-bottom: 25px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+      color: #555;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 16px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    input[type="text"]:focus {
+      outline: none;
+      border-color: #165DFF;
+      box-shadow: 0 0 0 3px rgba(22, 93, 255, 0.1);
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.1s ease;
+    }
+
+    .primary-btn {
+      flex: 1;
+      background-color: #165DFF;
+      color: white;
+    }
+
+    .primary-btn:hover {
+      background-color: #0E4CD1;
+    }
+
+    .secondary-btn {
+      flex: 1;
+      background-color: #f0f2f5;
+      color: #333;
+    }
+
+    .secondary-btn:hover {
+      background-color: #e0e2e5;
+    }
+
+    .contact-btn {
+      flex: 1;
+      background-color: #00B42A;
+      color: white;
+    }
+
+    .contact-btn:hover {
+      background-color: #009A22;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    /* 进度条样式 - 核心修改点 */
+    .progress-container {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      display: none;
+    }
+    
+    .progress-bar {
+      height: 2px;
+      background-color: #e0e0e0;
+      border-radius: 1px;
+      overflow: hidden;
+    }
+    
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      /* 颜色过渡动画 */
+      transition: width 0.3s ease, background-color 0.5s ease;
+      background-color: #ff4d4d; /* 初始红色 */
+    }
+    
+    /* 进度条不同阶段的颜色 */
+    .progress-fill.mid {
+      background-color: #ffcc00; /* 中间黄色 */
+    }
+    
+    .progress-fill.complete {
+      background-color: #00B42A; /* 完成绿色 */
+    }
+
+    /* 结果区域 */
+    .result {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+      display: none;
+    }
+
+    .result-item {
+      margin-bottom: 15px;
+    }
+
+    .result-label {
+      font-weight: 500;
+      color: #555;
+      margin-bottom: 5px;
+      display: block;
+    }
+
+    .result-value {
+      font-size: 16px;
+      padding: 8px 12px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      word-break: break-all;
+      color: #00B42A;
+      font-weight: bold;
+    }
+
+    @media (max-width: 480px) {
+      .card {
+        padding: 20px;
+      }
+
+      h1 {
+        font-size: 20px;
+      }
+
+      input[type="text"], button {
+        font-size: 14px;
+        padding: 10px 12px;
+      }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease forwards;
+    }
+
+    .more-info {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #f8f9fa;
+      border-radius: 6px;
+      display: none;
+    }
+
+    .more-info h3 {
+      color: #ff0000;
+      margin-bottom: 10px;
+      font-size: 18px;
+    }
+
+    .more-info p {
+      color: #555;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .footer-note {
+      margin-top: 25px;
+      text-align: center;
+      color: #888;
+      font-size: 14px;
+      padding-top: 15px;
+      border-top: 1px dashed #eee;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 1000;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      backdrop-filter: blur(3px);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 15% auto;
+      padding: 25px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      width: 90%;
+      max-width: 400px;
+      position: relative;
+      animation: modalFadeIn 0.3s ease;
+    }
+
+    @keyframes modalFadeIn {
+      from {opacity: 0; transform: translateY(-20px);}
+      to {opacity: 1; transform: translateY(0);}
+    }
+
+    .modal-content h2 {
+      color: #165DFF;
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 22px;
+    }
+
+    .contact-info p {
+      margin: 12px 0;
+      font-size: 16px;
+      line-height: 1.5;
+    }
+
+    .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+      line-height: 1;
+      position: absolute;
+      top: 15px;
+      right: 20px;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #000;
+    }
+
+    @media (max-width: 480px) {
+      .modal-content {
+        margin: 30% auto;
+        padding: 20px;
+        width: 95%;
+      }
+      
+      .modal-content h2 {
+        font-size: 20px;
+      }
+      
+      .contact-info p {
+        font-size: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1 class="title-with-line">密钥查询系统V3.0</h1>
+    
+    <div class="form-group" style="position: relative;">
+      <label for="activation-code" style="text-align: center;">激活/使用情况，自助查询</label>
+      <input type="text" id="activation-code" placeholder="请输入您的密钥，区分大小写..." maxlength="9" pattern="[A-Za-z0-9]{1,9}" autocomplete="off" style="padding-right:40px;">
+      <button id="refresh-btn" title="刷新" style="position:absolute;top:38px;right:8px;background:none;border:none;cursor:pointer;padding:0;">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6a6 6 0 1 1-12 0h2a4 4 0 1 0 8 0c0-2.21-1.79-4-4-4z" fill="#165DFF"/>
+        </svg>
+      </button>
+    </div>
+    
+    <div class="button-group">
+      <button id="query-btn" class="primary-btn">状态查询</button>
+      <button id="more-btn" class="secondary-btn">查询更多</button>
+      <button id="contact-btn" class="contact-btn">联系我们</button>
+    </div>
+    
+    <div class="more-info" id="more-info">
+      <div id="more-info-loading" style="display:none;color:#00B42A;font-size:16px;text-align:center;padding:10px 0;">请稍后，正在查询中...</div>
+      <div id="more-info-content">
+        <h3>系统，为您查询到以下信息</h3>
+        <p>• 有效期：24h（使用后）</p>
+        <p>• 密钥类型：普通</p>
+        <p>• 设备支持：Windows/一机一码</p>
+        <p>• 购买提示/说明：有</p>
+        <p>• 远程协助：无</p>
+        <p>• 增值服务：无</p>
+        <p>• 销售时间：请管理员，登录发卡平台/订单获取</p>
+      </div>
+    </div>
+    
+    <!-- 进度条容器 -->
+    <div class="progress-container" id="progress-container">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+    </div>
+    
+    <!-- 结果区域 -->
+    <div class="result" id="result">
+      <div class="result-item">
+        <span class="result-label">授权码：</span>
+        <span class="result-value" id="result-code"></span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">激活状态：</span>
+        <span class="result-value" id="result-status"></span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">查询时间：</span>
+        <span class="result-value" id="result-time"></span>
+      </div>
+      <div class="result-item">
+        <span class="result-label">销售渠道：</span>
+        <span class="result-value" id="result-channel">发卡平台</span>
+      </div>
+    </div>
+    
+    <div class="footer-note">
+      密码查询，渠道不限；如有问题，联系我们
+    </div>
+  </div>
+
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <h2>联系我们</h2>
+      <div class="contact-info">
+        <p><strong>工作时间：</strong>9:00-18:00</p>
+        <p><strong>邮箱：</strong>os360@foxmail.com</p>
+        <p><strong>微信：</strong>wander-wechat</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast" style="display:none;position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#165DFF;color:#fff;padding:10px 24px;border-radius:6px;z-index:2000;font-size:16px;box-shadow:0 2px 8px rgba(0,0,0,0.15);"></div>
+  
+  <script>
+    // 配置项
+    const enableSpecialCheck = true; // true: 开启检查，false: 关闭检查
+    const validPrefixes = "360OS,OS360"; // 有效密钥前缀，用英文逗号分隔
+    
+    // 处理有效前缀，转换为数组并去重
+    const validPrefixArray = validPrefixes
+      .split(',')
+      .map(prefix => prefix.trim())
+      .filter(prefix => prefix.length > 0);
+    
+    // 获取DOM元素
+    const queryBtn = document.getElementById('query-btn');
+    const moreBtn = document.getElementById('more-btn');
+    const contactBtn = document.getElementById('contact-btn');
+    const moreInfo = document.getElementById('more-info');
+    const activationCodeInput = document.getElementById('activation-code');
+    const resultContainer = document.getElementById('result');
+    const resultCode = document.getElementById('result-code');
+    const resultStatus = document.getElementById('result-status');
+    const resultTime = document.getElementById('result-time');
+    const refreshBtn = document.getElementById('refresh-btn');
+    const toast = document.getElementById('toast');
+    // 进度条元素
+    const progressContainer = document.getElementById('progress-container');
+    const progressFill = document.getElementById('progress-fill');
+
+    // 格式化日期
+    function formatDate(date) {
+      const year = date.getFullYear();
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const hours = String(date.getHours()).padStart(2, '0');
+      const minutes = String(date.getMinutes()).padStart(2, '0');
+      return `${year}年${month}月${day}号 ${hours}:${minutes}`;
+    }
+
+    // 只允许输入数字和英文
+    activationCodeInput.addEventListener('input', function(e) {
+      let val = activationCodeInput.value;
+      val = val.replace(/[^A-Za-z0-9]/g, '').slice(0, 9);
+      activationCodeInput.value = val;
+    });
+
+    // 刷新按钮
+    refreshBtn.addEventListener('click', function() {
+      window.location.reload();
+    });
+
+    // 弹窗提示
+    function showToast(msg) {
+      toast.textContent = msg;
+      toast.style.display = 'block';
+      setTimeout(() => {
+        toast.style.display = 'none';
+      }, 1000);
+    }
+
+    // 模拟进度条加载 - 带颜色变化效果
+    function simulateLoading() {
+      return new Promise((resolve) => {
+        // 重置进度条状态
+        progressContainer.style.display = 'block';
+        resultContainer.style.display = 'none';
+        progressFill.style.width = '0%';
+        progressFill.className = 'progress-fill'; // 移除所有类
+        
+        // 进度条动画
+        let progress = 0;
+        const interval = setInterval(() => {
+          // 随机增长进度
+          progress += Math.random() * 8 + 2;
+          
+          // 根据进度改变颜色
+          if (progress >= 100) {
+            progress = 100;
+            // 完成状态 - 绿色
+            progressFill.classList.remove('mid');
+            progressFill.classList.add('complete');
+            clearInterval(interval);
+            // 延迟一点时间再 resolve，让用户看到完成状态
+            setTimeout(resolve, 300);
+          } else if (progress >= 50) {
+            // 中间状态 - 黄色过渡
+            progressFill.classList.add('mid');
+          }
+          
+          progressFill.style.width = `${progress}%`;
+        }, 150);
+      });
+    }
+
+    // 验证密钥格式
+    function validateCode(code) {
+      // 检查长度至少4位
+      if (code.length < 4) {
+        return false;
+      }
+      
+      // 如果未开启特殊检查，直接返回true
+      if (!enableSpecialCheck) {
+        return true;
+      }
+      
+      // 如果没有配置有效前缀，则不通过验证
+      if (validPrefixArray.length === 0) {
+        return false;
+      }
+      
+      // 检查是否包含任何有效前缀，并且不能在有效前缀后添加额外字符
+      let hasValidPrefix = false;
+      let hasInvalidSuffix = false;
+      
+      for (const prefix of validPrefixArray) {
+        if (code.includes(prefix)) {
+          hasValidPrefix = true;
+          
+          // 检查是否在有效前缀后添加了额外字符
+          const prefixIndex = code.indexOf(prefix);
+          if (prefixIndex + prefix.length < code.length) {
+            hasInvalidSuffix = true;
+            break; // 找到一个无效情况即可退出循环
+          }
+        }
+      }
+      
+      // 如果有有效前缀且没有无效后缀
+      if (hasValidPrefix && !hasInvalidSuffix) {
+        // 确保包含数字和字母的混合
+        const hasNumber = /\d/.test(code);
+        const hasLetter = /[A-Za-z]/.test(code);
+        return hasNumber && hasLetter;
+      }
+      
+      return false;
+    }
+
+    // 查询激活码
+    async function queryActivationCode() {
+      const code = activationCodeInput.value.trim();
+      
+      // 验证输入格式
+      if (!validateCode(code)) {
+        showToast('请输入正确有效的密钥');
+        return;
+      }
+      
+      // 先执行加载动画
+      await simulateLoading();
+      
+      // 隐藏进度条
+      progressContainer.style.display = 'none';
+      
+      // 显示查询结果
+      resultCode.textContent = code;
+      resultStatus.textContent = '已使用或激活';
+      
+      // 设置当前查询时间
+      const now = new Date();
+      resultTime.textContent = formatDate(now);
+      
+      // 显示结果区域并添加动画
+      resultContainer.style.display = 'block';
+      resultContainer.classList.remove('fade-in');
+      void resultContainer.offsetWidth; // 触发重绘
+      resultContainer.classList.add('fade-in');
+    }
+
+    // 切换更多信息显示状态
+    function toggleMoreInfo() {
+      const code = activationCodeInput.value.trim();
+      
+      // 验证输入格式，与状态查询使用相同的验证逻辑
+      if (!validateCode(code)) {
+        showToast('请输入正确有效的密钥');
+        return;
+      }
+      
+      const loadingDiv = document.getElementById('more-info-loading');
+      const contentDiv = document.getElementById('more-info-content');
+      if (moreInfo.style.display === 'block') {
+        moreInfo.style.display = 'none';
+        moreBtn.textContent = '查询更多';
+        loadingDiv.style.display = 'none';
+        contentDiv.style.display = 'none';
+      } else {
+        moreInfo.style.display = 'block';
+        moreBtn.textContent = '收起信息';
+        moreInfo.classList.remove('fade-in');
+        void moreInfo.offsetWidth;
+        moreInfo.classList.add('fade-in');
+        
+        loadingDiv.style.display = 'block';
+        contentDiv.style.display = 'none';
+        setTimeout(function() {
+          loadingDiv.style.display = 'none';
+          contentDiv.style.display = 'block';
+        }, 3000);
+      }
+    }
+
+    // 联系我们模态框
+    function contactUs() {
+      const modal = document.getElementById('modal');
+      const span = document.getElementsByClassName('close')[0];
+      modal.style.display = 'block';
+
+      span.onclick = function() {
+        modal.style.display = 'none';
+      };
+
+      window.onclick = function(event) {
+        if (event.target === modal) {
+          modal.style.display = 'none';
+        }
+      };
+
+      document.onkeydown = function(event) {
+        if (event.key === 'Escape') {
+          modal.style.display = 'none';
+        }
+      };
+    }
+
+    // 绑定按钮点击事件
+    queryBtn.addEventListener('click', queryActivationCode);
+    moreBtn.addEventListener('click', toggleMoreInfo);
+    contactBtn.addEventListener('click', contactUs);
+    
+    // 绑定回车键事件
+    activationCodeInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        queryActivationCode();
+      }
+    });
+  </script>
+  
+</body>
+</html>
